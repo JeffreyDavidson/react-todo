@@ -5,6 +5,8 @@ import TodoCompleteAllTodos from './TodoCompleteAllTodos';
 import TodoFilters from './TodoFilters';
 import useToggle from '../hooks/useToggle';
 import { TodosContext } from '../context/TodosContext';
+import { CSSTransition } from 'react-transition-group';
+import { TransitionGroup } from 'react-transition-group';
 
 function TodoList() {
   const { todos, setTodos, todosFiltered } = useContext(TodosContext);
@@ -70,8 +72,9 @@ function TodoList() {
 
   return (
     <>
-      <ul className="todo-list">
+      <TransitionGroup component="ul" className="tod-list">
           { todosFiltered().map((todo, index) => (
+          <CSSTransition key={todo.id} timeout={300} classNames="slide-horizontal">
           <li key={todo.id} className="todo-item-container">
             <div className="todo-item">
               <input type="checkbox" onChange={() => completeTodo(todo.id)} checked={todo.isComplete ? true : false} />
@@ -114,30 +117,41 @@ function TodoList() {
               </svg>
             </button>
           </li>
+          </CSSTransition>
           ))}
-        </ul>
+        </TransitionGroup>
 
         <div className="toggles-container">
           <button className="butotn" onClick={setFeaturesOneVisible}>Features One Toggle</button>
           <button className="butotn" onClick={setFeaturesTwoVisible}>Features Two Toggle</button>
         </div>
 
-        {isFeaturesOneVisible && (
+        <CSSTransition
+          in={isFeaturesOneVisible}
+          timeout={300}
+          classNames="slide-vertical"
+          unmountOnExit
+        >
           <div className="check-all-container">
             <TodoCompleteAllTodos />
 
             <TodoItemsRemaining />
           </div>
-        )}
+        </CSSTransition>
 
-        {isFeaturesTwoVisible && (
+        <CSSTransition
+            in={isFeaturesTwoVisible}
+            timeout={300}
+            classNames="slide-vertical"
+            unmountOnExit
+        >
             <div className="other-buttons-container">
                 <TodoFilters />
                 <div>
                   <TodoClearCompleted />
                 </div>
             </div>
-        )}
+        </CSSTransition>
     </>
   )
 }
